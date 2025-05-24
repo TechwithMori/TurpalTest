@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Availability extends Model
+class InvoiceItem extends Model
 {
     use HasFactory;
 
-    public function experience(): BelongsTo
+    public function invoice(): BelongsTo
     {
-        return $this->belongsTo(Experience::class);
+        return $this->belongsTo(Invoice::class);
     }
 }

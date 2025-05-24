@@ -13,14 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('availabilities', function (Blueprint $table) {
-            $table->id();
+        Schema::create('experience_video', function (Blueprint $table) {
             $table->foreignId('experience_id')->constrained('experiences')->onDelete('cascade');
-            $table->decimal('sell_price', 10, 2);
-            $table->decimal('buy_price', 10, 2);
-            $table->dateTime('start_time');
-            $table->dateTime('end_time');
-            $table->timestamps();
+            $table->foreignId('video_id')->constrained('videos')->onDelete('cascade');
+            $table->primary(['experience_id', 'video_id']);
         });
     }
 
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('availabilities');
+        Schema::dropIfExists('experience_video');
     }
 };

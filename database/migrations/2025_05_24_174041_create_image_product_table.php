@@ -13,14 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
+        Schema::create('experience_image', function (Blueprint $table) {
+            $table->foreignId('experience_id')->constrained('experiences')->onDelete('cascade');
+            $table->foreignId('image_id')->constrained('images')->onDelete('cascade');
+            $table->primary(['experience_id', 'image_id']);
         });
     }
 
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('experience_image');
     }
 };
