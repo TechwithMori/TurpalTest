@@ -1,55 +1,58 @@
-# Turpal - Technical Challenge
+# Turpal - Backend Developer Technical Challenae
 
-## Description
+## 📖 Context
 
-Imagine you are working for a travel company called _Travello_.
+Welcome to your technical take-home challenge!
 
-Travello started out by selling their own products (like experiences/tours/events) for a while. They became quite successful and they decided to integrate with 3rd party providers to expand their range of products.
+Imagine you're joining a travel company called **Travello** as a backend developer. The platform originally sold curated experiences (tours, events, etc.) directly. As the company has grown, it now faces increased load and the need to integrate with multiple third-party providers. It also needs to refactor parts of its codebase to support future scalability.
 
-Here you are expected to write a minimal working API for the business.
+You're inheriting a **legacy Laravel codebase**. It's messy in parts, shows signs of tight coupling and missing abstractions, and has some performance issues — the typical realities of a fast-moving startup.
 
-We have bootstrapped the project in a Laravel enviorment.
-This is the initial [database schema](https://dbdiagram.io/d/630380baf1a9b01b0fbb25ca).
+---
 
-## Tasks
+## 🚀 Challenge Scope
 
-### 1. Search API
+### 🔌 Integrate One Third-Party Provider
 
-First you are expected to deliver Travello products through the search API:
+You are asked to integrate one of these fictional third-party providers:
 
--   Accessible by `GET /search` route.
--   Only **available** products should be shown.
--   Optionally filter by `startDate` and `endDate`. Default is 2 weeks from today.
+- [Heavenly Tours API Docs](https://mock.turpal.com/docs/heavenly)
+- [Majesty Travels API Docs](https://mock.turpal.com/docs/majesty)
 
-Sample response structure:
+The idea is to implement a clean and extensible integration with one of these providers, keeping in mind the growing number of future providers. By "transparent," we mean keeping the provider logic encapsulated, while preserving the internal data structure of our own platform.
 
-```json
-[
-    {
-        "title": "Desert Safari",
-        "minimumPrice": "250.0 AED",
-        "thumbnail": "https://picsum.photos/300/200"
-    }
-]
-```
+Your responsibilities:
 
-### 2. Integration
+- Ensure integration is clean and **transparent**
+- Normalize responses from different providers into a **unified format**
+- Design your solution to be extensible for future provider integrations without significant rewrites
 
-Now you are in charge of the integration. This is the primary focus of this challenge.
+---
 
-The idea is to have **transparent** integration with the ever-increasing list of providers.  
-By transparent, we mean the Search API always presents the same response structure [as detailed above] for all sort of products.
+### 📡 Topics for the Follow-Up Interview
 
-#### Provider
+The following topics are outside the scope of the take-home assignment, but we may explore them during the follow-up discussion to better understand your thinking and approach:
 
-Here is a fictional provider you need to integrate with:
+- Challenges you encountered during the provider integration
+- Refactoring strategies and performance considerations
+- Ideas for improving the internal API design
+- Designing an online booking flow
+- Adapting the system for future needs such as:
+  - E-commerce capabilities
+  - Multi-tenancy
+  - Localization and multi-language support
+  - Multi-currency handling
 
-1. Heavenly Tours ([API Docs](https://documenter.getpostman.com/view/24789999/2s8Z6zyrnn))
+---
 
-## Delivery
+## ✅ Delivery Instructions
 
-1. Clone this repository under your own git namespace.
-2. Write us _your_ best code.
-3. Send us the link to the repository.
+1. Write us your best code.
+2. Send us the link to your repository.
+3. Add any extra notes or responses in `NOTES.md`.
+4. Be prepared to discuss your code, decisions, and design in a follow-up interview.
+5. Use of any AI tools is encouraged. You may be asked to use it in the follow-up interview.
 
-We appreciate your time and effort in advance. Good luck!
+---
+
+We appreciate the time and thought you put into this. Good luck, and we look forward to reviewing your work!
