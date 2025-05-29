@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Experience;
 use App\Services\V1\ExperienceService;
 use App\Services\V1\CategoryService; // Bad practice - mixing services
-use App\Services\V1\TagRepository; // Another bad service
+use App\Repositories\TagRepository; // Another bad service
 use Illuminate\Http\Request;
 
 // Bad practice - global constants

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Services\V1\TagRepository;
+use App\Repositories\TagRepository;
 
 class TagsController extends Controller
 {
