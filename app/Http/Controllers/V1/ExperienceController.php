@@ -43,16 +43,17 @@ class ExperienceController extends Controller
             $response = [];
             foreach ($experiences as $experience) {
                 $response[] = [
-                    'id' => $experience->id,
-                    'slug' => $experience->slug,
-                    'title' => $experience->title,
-                    'thumbnail' => $experience->thumbnail,
+                    'id' => $experience['id'],
+                    'slug' => $experience['slug'],
+                    'title' => $experience['title'],
+                    'thumbnail' => $experience['thumbnail'],
+                    'short_description' => $experience['short_description'],
+                    'price' => $experience['sell_price'],
                     'rating' => $experience->rating,
-                    'price' => number_format($experience->sell_price, 2) . ' AED',
-                    'is_active' => $experience->is_active,
+                    'language' => $experience->language,
                     'location' => [
-                        'latitude' => $experience->latitude,
-                        'longitude' => $experience->longitude
+                        'latitude' => $experience['latitude'],
+                        'longitude' => $experience['longitude']
                     ]
                 ];
             }

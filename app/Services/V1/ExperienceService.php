@@ -44,16 +44,25 @@ class ExperienceService
             })
             ->get();
 
-            return $experiences->map(function ($experience) {
+            return $experiences->map(function ($experience) use ($startDate, $endDate) {
+                $availabilities = $experience->availabilities
+                    ->whereNot(fn ($query) => $query->where('start_time', '>', $endDate)
+                    ->orWhere('end_time', '<', $startDate));
+
                 return [
+                    'id' => $experience->id,
+                    'slug' => $experience->slug,
                     'title' => $experience->title,
-                    'minimumPrice' => number_format($experience->sell_price, 2) . ' USD',
                     'thumbnail' => $experience->thumbnail ?? 'https://picsum.photos/300/200',
                     'short_description' => $experience->short_description,
+                    'sell_price' => number_format($availabilities->min('sell_price'), 2) . ' USD',
+                    'buy_price' => number_format($availabilities->min('buy_price'), 2) . ' USD',
                     'rating' => $experience->rating,
                     'city' => $experience->city_id,
-                    'country' => $experience->country_code,
+                    'country_code' => $experience->country_code,
                     'language' => $experience->language,
+                    'latitude' => $experience->latitude,
+                    'longitude' => $experience->longitude,
                 ];
             })->toArray();
         });

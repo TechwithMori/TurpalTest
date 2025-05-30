@@ -12,6 +12,7 @@ Route::get('experiences/category/{slug}', [ExperienceController::class, 'getCate
 Route::get('experiences/tags/{value}', [ExperienceController::class, 'getTagExperiences']);
 Route::get('experiences/details/{id}', [ExperienceController::class, 'getExperienceDetails']);
 Route::get('experiences/availability', [ExperienceController::class, 'getExperienceAvailability']);
+Route::post('experiences/book', [ExperienceController::class, 'book']);
 
 Route::get('categories', [CategoryController::class, 'index']);
 Route::get('categories/{category}', [CategoryController::class, 'show']);
