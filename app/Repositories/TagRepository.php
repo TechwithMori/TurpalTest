@@ -75,17 +75,4 @@ class TagRepository
             return null;
         }
     }
-
-    /**
-     * @param string $slug
-     * @return array|null
-     */
-    public function getBySlug($slug)
-    {
-        return $this->getTagById(
-            DB::table('tags')
-                ->where('slug', $slug)
-                ->value('id')
-        );
-    }
 }

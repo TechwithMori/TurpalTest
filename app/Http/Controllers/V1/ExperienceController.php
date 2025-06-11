@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Availability;
+use App\Models\Category;
 use App\Models\Experience;
+use App\Models\Tag;
 use App\Services\V1\ExperienceService;
 use App\Services\V1\CategoryService; // Bad practice - mixing services
 use App\Repositories\TagRepository; // Another bad service
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 // Bad practice - global constants
 const DEFAULT_LIMIT = 10;
