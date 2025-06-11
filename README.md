@@ -14,18 +14,22 @@ You're inheriting a **legacy Laravel codebase**. It's messy in parts, shows sign
 
 ### 🔌 Integrate One Third-Party Provider
 
-You are asked to integrate one of these fictional third-party providers:
+The idea is to implement a clean and extensible integration with one of the fictional third-party providers listed below, with future integrations in mind.
+
+By **"transparent,"** we mean that the consumer of our internal API (e.g., the e-commerce website) should receive consistent, normalized data, regardless of whether it comes from our local database or a third-party provider. The source of the data should be abstracted away from the consumer.
+
+Since this API currently powers a live e-commerce website, it's important to preserve the existing API schema and behavior. If any changes are necessary, be explicitly aware of their impact on the consuming client.
+
+You are asked to integrate one of these providers:
 
 - [Heavenly Tours API Docs](https://mock.turpal.com/docs/heavenly)
 - [Majesty Travels API Docs](https://mock.turpal.com/docs/majesty)
 
-The idea is to implement a clean and extensible integration with one of these providers, keeping in mind the growing number of future providers. By "transparent," we mean keeping the provider logic encapsulated, while preserving the internal data structure of our own platform.
-
-Your responsibilities:
+**Considerations:**
 
 - Ensure integration is clean and **transparent**
-- Normalize responses from different providers into a **unified format**
-- Design your solution to be extensible for future provider integrations without significant rewrites
+- Normalize provider responses into a **unified internal format**
+- Design for **extensibility** to support future provider integrations without major rewrites
 
 ---
 
