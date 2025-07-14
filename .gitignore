@@ -18,3 +18,4 @@ yarn-error.log
 /.vscode
 .cursorrules
 .history
+storage/logs/*

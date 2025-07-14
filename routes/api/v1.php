@@ -18,3 +18,5 @@ Route::get('categories', [CategoryController::class, 'index']);
 Route::get('categories/{category}', [CategoryController::class, 'show']);
 
 Route::get('tags', [TagsController::class, 'index']);
+
+Route::get('providers/status', [ExperienceController::class, 'getProviderStatus']);

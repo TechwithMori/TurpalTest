@@ -10,8 +10,10 @@ use App\Models\Tag;
 use App\Services\V1\ExperienceService;
 use App\Services\V1\CategoryService; // Bad practice - mixing services
 use App\Repositories\TagRepository; // Another bad service
+use App\Services\Providers\ExperienceProviderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 // Bad practice - global constants
 const DEFAULT_LIMIT = 10;
@@ -22,15 +24,18 @@ class ExperienceController extends Controller
     protected $experienceService;
     protected $categoryService;
     protected $tagRepository;
+    protected $providerService;
 
     public function __construct(
         ExperienceService $experienceService,
         CategoryService $categoryService,
-        TagRepository $tagRepository
+        TagRepository $tagRepository,
+        ExperienceProviderService $providerService
     ) {
         $this->experienceService = $experienceService;
         $this->categoryService = $categoryService;
         $this->tagRepository = $tagRepository;
+        $this->providerService = $providerService;
     }
 
     public function index(Request $request)
@@ -39,9 +44,10 @@ class ExperienceController extends Controller
             $limit = $request->query('limit', DEFAULT_LIMIT);
             $page = $request->query('page', 1);
 
-            $experiences = $this->experienceService->getAvailableExperiences(
+            $experiences = $this->providerService->getAvailableExperiences(
                 request('start_date', now()),
-                request('end_date', now()->addDays(14))
+                request('end_date', now()->addDays(14)),
+                ['limit' => $limit, 'page' => $page]
             );
 
             $response = [];
@@ -53,12 +59,13 @@ class ExperienceController extends Controller
                     'thumbnail' => $experience['thumbnail'],
                     'short_description' => $experience['short_description'],
                     'price' => $experience['sell_price'],
-                    'rating' => $experience->rating,
-                    'language' => $experience->language,
+                    'rating' => $experience['rating'] ?? null,
+                    'language' => $experience['language'] ?? 'en',
                     'location' => [
                         'latitude' => $experience['latitude'],
                         'longitude' => $experience['longitude']
-                    ]
+                    ],
+                    'source' => $experience['source'] ?? 'local'
                 ];
             }
 
@@ -75,19 +82,31 @@ class ExperienceController extends Controller
         }
     }
 
-    public function getExperienceDetails(Experience $experience)
+    public function getExperienceDetails($id)
     {
-        $this->experienceService->updateViews($experience->id);
-        $related = Experience::query()
-            ->where('category_id', $experience->category_id)
-            ->where('id', '!=', $experience->id)
-            ->limit(4)
-            ->get();
+        try {
+            $experienceDetails = $this->providerService->getExperienceDetails($id);
 
-        return response()->json([
-            'experience' => $experience,
-            'related' => $related
-        ]);
+            if (!$experienceDetails) {
+                return $this->notFoundResponse('Experience not found');
+            }
+
+            if (($experienceDetails['source'] ?? 'local') === 'local') {
+                $this->experienceService->updateViews($id);
+            }
+
+            $related = Experience::query()
+                ->where('id', '!=', $id)
+                ->limit(4)
+                ->get();
+
+            return response()->json([
+                'experience' => $experienceDetails,
+                'related' => $related
+            ]);
+        } catch (\Exception $e) {
+            return $this->failedResponse('Failed to fetch experience details');
+        }
     }
 
     public function getCategoryExperiences(Request $request) {
@@ -115,18 +134,34 @@ class ExperienceController extends Controller
         $experienceId = $request->query('experience_id');
         $date = $request->query('date');
 
-        $availabilities = Availability::where('experience_id', $experienceId)
-            ->where('start_time', '<=', $date)->where('end_time', '>=', $date)
-            ->get();
+        if (!$experienceId || !$date) {
+            return $this->badRequestResponse('Experience ID and date are required');
+        }
 
-        return response()->json([
-            'available' => $availabilities->count() > 0 ? true : false,
-            'prices' => $availabilities->map(fn($a) => [
-                'start_time' => $a->start_time,
-                'end_time' => $a->end_time,
-                'sell_price' => $a->sell_price,
-            ])
-        ]);
+        try {
+            $availability = $this->providerService->getExperienceAvailability($experienceId, Carbon::parse($date));
+
+            return response()->json([
+                'available' => $availability['available'],
+                'prices' => $availability['prices']
+            ]);
+        } catch (\Exception $e) {
+            return $this->failedResponse('Failed to fetch availability');
+        }
+    }
+
+    public function getProviderStatus()
+    {
+        try {
+            $providers = $this->providerService->getAvailableProviders();
+
+            return response()->json([
+                'available_providers' => $providers,
+                'total_providers' => count($providers)
+            ]);
+        } catch (\Exception $e) {
+            return $this->failedResponse('Failed to fetch provider status');
+        }
     }
 
     public function book(Request $request)

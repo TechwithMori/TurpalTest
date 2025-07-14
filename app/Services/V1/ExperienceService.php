@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Availability;
+use Carbon\Carbon;
 
 class ExperienceService
 {
@@ -27,7 +28,7 @@ class ExperienceService
      */
     public function getAvailableExperiences($startDate, $endDate)
     {
-        $cacheKey = 'experiences_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d');
+        $cacheKey = 'local_experiences_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d');
 
         return Cache::remember($cacheKey, $this->cacheDuration, function () use ($startDate, $endDate) {
             $experiences = Experience::whereHas('availabilities', function ($query) use ($startDate, $endDate) {
@@ -46,8 +47,7 @@ class ExperienceService
 
             return $experiences->map(function ($experience) use ($startDate, $endDate) {
                 $availabilities = $experience->availabilities
-                    ->whereNot(fn ($query) => $query->where('start_time', '>', $endDate)
-                    ->orWhere('end_time', '<', $startDate));
+                    ->where(fn ($availability) => $availability->start_time <= $endDate && $availability->end_time >= $startDate);
 
                 return [
                     'id' => $experience->id,
@@ -63,6 +63,7 @@ class ExperienceService
                     'language' => $experience->language,
                     'latitude' => $experience->latitude,
                     'longitude' => $experience->longitude,
+                    'source' => 'local',
                 ];
             })->toArray();
         });
@@ -73,6 +74,68 @@ class ExperienceService
         return DB::table('experiences')
             ->where('id', $experienceId)
             ->increment('views');
+    }
+
+    /**
+     * Get experience details for local experiences
+     *
+     * @param Experience $experience
+     * @return array
+     */
+    public function getExperienceDetails(Experience $experience)
+    {
+        return [
+            'id' => $experience->id,
+            'slug' => $experience->slug,
+            'title' => $experience->title,
+            'short_description' => $experience->short_description,
+            'description' => $experience->description,
+            'thumbnail' => $experience->thumbnail ?? 'https://picsum.photos/300/200',
+            'language' => $experience->language,
+            'inclusions' => $experience->inclusions,
+            'exclusions' => $experience->exclusions,
+            'itinerary' => $experience->itinerary,
+            'what_to_bring' => $experience->what_to_bring,
+            'what_to_wear' => $experience->what_to_wear,
+            'what_to_expect' => $experience->what_to_expect,
+            'what_to_know' => $experience->what_to_know,
+            'remarks' => $experience->remarks,
+            'meeting_instructions' => $experience->meeting_instructions,
+            'cancellation_policy' => $experience->cancellation_policy,
+            'refund_policy' => $experience->refund_policy,
+            'health_and_safety' => $experience->health_and_safety,
+            'latitude' => $experience->latitude,
+            'longitude' => $experience->longitude,
+            'city' => $experience->city_id,
+            'country_code' => $experience->country_code,
+            'rating' => $experience->rating,
+            'views' => $experience->views,
+            'source' => 'local',
+        ];
+    }
+
+    /**
+     * Get experience availability for local experiences
+     *
+     * @param string $experienceId
+     * @param Carbon $date
+     * @return array
+     */
+    public function getExperienceAvailability(string $experienceId, Carbon $date)
+    {
+        $availabilities = Availability::where('experience_id', $experienceId)
+            ->where('start_time', '<=', $date)
+            ->where('end_time', '>=', $date)
+            ->get();
+
+        return [
+            'available' => $availabilities->count() > 0,
+            'prices' => $availabilities->map(fn($a) => [
+                'start_time' => $a->start_time,
+                'end_time' => $a->end_time,
+                'sell_price' => $a->sell_price,
+            ])->toArray(),
+        ];
     }
 
     public function purchase($validatedData)

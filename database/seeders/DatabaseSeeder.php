@@ -20,5 +20,10 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        // Seed test data for the Heavenly Tours integration
+        $this->call([
+            TestDataSeeder::class,
+        ]);
     }
 }
